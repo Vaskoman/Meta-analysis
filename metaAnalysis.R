@@ -5,6 +5,12 @@
 ## FUNCTIONS ####
 
 ## setwd, load libraries, & load data ####
+setwd("/home/vassil/Documents/Bcells/BioInfo/Meta-analysis")
+source ("http://www.bioconductor.org/biocLite.R")
+biocLite("clusterProfiler") # also choose to update all packages
+library(clusterProfiler)
+
+
 
 ## DO categories with the most datasets ####
 # extract datasets belonging to each category
