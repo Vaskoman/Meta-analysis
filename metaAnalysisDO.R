@@ -1,4 +1,4 @@
-# Meta-analysis for top DO and GO-BP categories
+# Meta-analysis for top DO
 # Datasets and genes that belong to these categories
 # Novel biologically significant genes
 
@@ -42,6 +42,9 @@ for (i in names(categories.order)){
 dat20 <- dat.order[dat.order$ID %in% names(categories.order)[1:20],]
 save(dat20, file = "dat20DO")
 write.table(dat20, file="DO.top20.txt", sep="\t", row.names=FALSE)
+
+rm (list = c("ckAll", "a", "dat", "dat.order","categories",
+             "categories.order","i"))
 
 ## Extract DO genes for each category (unique) ####
 
@@ -101,9 +104,3 @@ for (i in DOsNames) {
               sep="\t", row.names = FALSE)
 }
 
-
-## GO BP categories with the most datasets ####
-# extract datasets belonging to each category
-# extract gene names belonging to each category
-# extract genes from master tables per category
-# go over to select novel relevant significant genes (just up but not down)
