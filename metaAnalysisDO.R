@@ -61,14 +61,14 @@ DOsNames <- c("ATHEROSCLEROSIS", "PNEUMONIA", "OBSTRUCTIVE.LUNG.DISEASE",
                 "INTEGUMENTARY.SYSTEM.DISEASE",
                 "PRIMARY.BACTERIAL.INFECTIOUS.DISEASE", "OVARIAN.CARCINOMA")
 
-## Create DO directories for the most prominent categories ####
+## Extract genes from master tables for each DO ####
 for (i in 1:length(DOs)){
   genes <- extractDOgenes (DOs[i])
   assign(paste0(DOsNames[i],"genes"), genes)
   rm (genes)
 }
 
-## Extract genes from master tables for each DO category and save genes IDs ####
+## Create DO directories and save genes IDs ####
 for (i in DOsNames){
   if (!file.exists(i)) {
     dir.create(i)
@@ -76,7 +76,7 @@ for (i in DOsNames){
   filename <- paste0(i, "genes")
   savefile <- get(filename)
   dirname <- paste0 (getwd(), "/", i, "/", filename)
-  save (savefile, file = dirname)
+  save (list=savefile, file = dirname)
 }
 
 ## Load master tables ####
@@ -93,14 +93,50 @@ for (i in DOsNames) {
   assign(paste0(i,"tabUp"), tabUp)
   assign(paste0(i,"tabDown"), tabDown)
   filename <- paste0(i,"tabUp")
-  save (filename, file = paste0(i, "/",i,"tabUp"))
+  save (list=filename, file = paste0(i, "/",i,"tabUp"))
   write.table(get(paste0(i,"tabUp")),
               file = paste0(i, "/",i,"tabUp.txt"),
               sep="\t", row.names = FALSE)
   filenameDown <- paste0(i,"tabDown")
-  save (filenameDown, file = paste0(i, "/",i,"tabDown"))
+  save (list=filenameDown, file = paste0(i, "/",i,"tabDown"))
   write.table(get(paste0(i,"tabDown")),
               file = paste0(i, "/",i,"tabDown.txt"),
               sep="\t", row.names = FALSE)
 }
 
+rm (list = c("tabUp", "tabDown", "filenameDown",
+             "filename","geneNames"))
+rm (list = c("dirname","i"))
+
+#########################################################################
+
+rm (list = ls())
+load("/home/vassil/Documents/Bcells/Meta-analysis/ATHEROSCLEROSIS/ATHEROSCLEROSIStabDown")
+load("/home/vassil/Documents/Bcells/Meta-analysis/ATHEROSCLEROSIS/ATHEROSCLEROSIStabUp")
+
+tabUp <- ATHEROSCLEROSIStabUp
+tabDown <- ATHEROSCLEROSIStabDown
+
+
+# Split per cell type:
+# Get non-significant genes:
+# Check for regulation in opposite table
+# Table with newly significant genes
+
+
+
+genesNOsig <- tabUpo[tabUpo$P.Value>0.05, "Gene.ID"]
+genesNOsig.u <- unique(genesNOsig)
+tabUpo.non.sig <- tabUpo[tabUpo$Gene.ID %in% genes2,]
+
+genes2 <- genesNOsig.u[!(genesNOsig.u %in% ATHEROSCLEROSIStabDown$Gene.ID)]
+Epith <- grep ("^E.", tabUpo.non.sig$dataset)
+
+tabUpo.non.sig.E <- tabUpo.non.sig[Epith,]
+
+# Get a list of genes that appear as statistically non-significant (>0.05)
+# Separate them based on dataset cell type
+# Remove genes that appear as regulated in the opposite direction in
+# same-cell-type datasets
+# BP association of these genes and GO diagram (BPs and MFs)
+# Select novel genes (not regulated by VD) and look up their disease function
